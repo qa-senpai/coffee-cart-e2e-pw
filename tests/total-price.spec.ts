@@ -1,25 +1,14 @@
 import { test, expect } from "@playwright/test";
 
-test("test", async ({ page }) => {
-  await page.goto("/");
-  await page.waitForTimeout(2000);
+test("сума на кнопці Checkout враховує дві додані книги", async ({ page }) => {
+  await page.goto("https://bookhaven.example/");
 
-  await page.locator('[data-test="Espresso"]').click();
-  await page.waitForTimeout(1000);
-  await page.locator('[data-test="Cappuccino"]').click();
-  await page.waitForTimeout(1000);
-  await page.locator("div:nth-child(3) > .cup-body").click();
-  await page.waitForTimeout(1000);
+  await page.getByRole("link", { name: "The Great Gatsby" }).click();
+  await page.getByRole("button", { name: "Add to cart" }).click();
+  await page.getByRole("link", { name: "1984" }).click();
+  await page.getByRole("button", { name: "Add to cart" }).click();
 
-  await page.locator('[data-test="checkout"]').click();
-  await page.waitForTimeout(1000);
-
-  await page.getByLabel("Name").fill("Ivan Petrenko");
-  await page.getByLabel("Email").fill("ivan@example.com");
-  await page.waitForTimeout(1000);
-
-  await page.getByRole("button", { name: "Submit" }).click();
-  await page.waitForTimeout(3000);
-
-  await expect(page.locator("body")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Checkout" })).toHaveText(
+    "Checkout: $27.98"
+  );
 });
